@@ -1,17 +1,20 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.9'
+        }
+    }
 
     stages {
-
-        stage('Build Docker Image') {
+        stage('Install Dependencies') {
             steps {
-                sh 'docker build -t aceest-app:v1 .'
+                sh 'pip install -r requirements.txt'
             }
         }
 
-        stage('Run Tests in Container') {
+        stage('Run Tests') {
             steps {
-                sh 'docker run aceest-app:v1 python -m pytest'
+                sh 'pytest'
             }
         }
     }
