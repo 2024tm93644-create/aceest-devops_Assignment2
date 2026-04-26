@@ -2,15 +2,16 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Dependencies') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'python -m pip install -r requirements.txt'
+                sh 'docker build -t aceest-app:v1 .'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Tests in Container') {
             steps {
-                sh 'python -m pytest'
+                sh 'docker run aceest-app:v1 python -m pytest'
             }
         }
     }
