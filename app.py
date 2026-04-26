@@ -10,5 +10,9 @@ def home():
 def health():
     return {"status": "ok"}
 
+@app.route('/members')
+def members():
+    return "Members list - Version 2"
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
