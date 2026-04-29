@@ -1,43 +1,42 @@
-# Implementing Automated CI/CD Pipelines for ACEest Fitness & Gym
+# ACEest DevOps – CI/CD Pipeline with Kubernetes
 
-![CI Pipeline](https://github.com/2024tm93644-create/aceest-devops/actions/workflows/main.yml/badge.svg)
+## Overview
 
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![Flask](https://img.shields.io/badge/Flask-WebApp-green)
-![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
-![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-red)
-![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI-blue)
-## Project Overview
+This project is a continuation of the ACEest DevOps setup where a complete CI/CD pipeline is implemented and extended up to Kubernetes deployment.
 
-This project demonstrates the implementation of a **modern DevOps workflow** for the ACEest Fitness & Gym web application. The objective is to automate the software lifecycle from development to build validation using industry-standard tools including **Git, Docker, Jenkins, Pytest, and GitHub Actions**.
+The goal was not just building and testing the app, but actually taking it all the way to deployment using containers and orchestration.
 
-The application is a simple **Flask-based web service** designed to simulate a lightweight fitness and gym management system.
-
-This project showcases how **Continuous Integration and Continuous Delivery (CI/CD)** pipelines help ensure:
-
-* Code quality
-* Automated testing
-* Consistent deployment environments
-* Faster delivery cycles
+The application used is a simple Flask-based service to simulate a fitness system backend.
 
 ---
 
-# Technology Stack
+## What’s Covered in This Assignment
 
-| Tool           | Purpose                      |
-| -------------- | ---------------------------- |
-| Python (Flask) | Web Application              |
-| Git & GitHub   | Version Control              |
-| Pytest         | Unit Testing Framework       |
-| Docker         | Application Containerization |
-| Jenkins        | Build Automation             |
-| GitHub Actions | CI/CD Pipeline Automation    |
+- CI pipeline using Jenkins & GitHub Actions  
+- Automated testing using Pytest  
+- Docker containerization  
+- Docker Hub image push  
+- Kubernetes deployment  
+- Deployment strategies (Rolling Update + Rollback)  
 
 ---
 
-# Project Structure
+## Tech Stack
 
-```
+- Python (Flask)  
+- Git & GitHub  
+- Jenkins  
+- Pytest  
+- Docker  
+- Docker Hub  
+- Kubernetes  
+- SonarQube (Conceptual)  
+
+---
+
+## Project Structure
+
+
 aceest-devops/
 │
 ├── app.py
@@ -45,235 +44,74 @@ aceest-devops/
 ├── Dockerfile
 │
 ├── tests/
-│   └── test_app.py
+│ └── test_app.py
 │
-├── .github/
-│   └── workflows/
-│        └── main.yml
+├── k8s/
+│ ├── deployment.yaml
+│ └── service.yaml
 │
 └── README.md
-```
+
 
 ---
 
-# Flask Application
+## CI/CD Workflow
 
-The Flask application provides a simple endpoint to simulate a fitness service backend.
 
-Example endpoint:
+Code Push → GitHub
+↓
+CI Pipeline Trigger
+↓
+Run Tests (Pytest)
+↓
+Build Docker Image
+↓
+Push to Docker Hub
+↓
+Deploy to Kubernetes
 
-```
-GET /
-```
-
-Response:
-
-```
-Welcome to ACEest Fitness & Gym
-```
 
 ---
 
-# Local Setup Instructions
+## Running Locally
 
-### 1. Clone the Repository
-
-```
-git clone https://github.com/<your-username>/aceest-devops.git
-cd aceest-devops
-```
-
-### 2. Create Virtual Environment
-
-```
-python -m venv venv
-```
-
-Activate the environment:
-
-Windows:
-
-```
-venv\Scripts\activate
-```
-
-Linux/Mac:
-
-```
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```
-pip install -r requirements.txt
-```
-
-### 4. Run the Application
-
-```
+```bash
 python app.py
-```
 
-Application runs on:
+Runs on:
 
-```
 http://localhost:5000
-```
-
----
-
-# Running Unit Tests
-
-Unit testing is implemented using **Pytest** to verify application functionality.
-
-Run tests using:
-
-```
+Running Tests
 pytest
-```
-
-Expected output:
-
-```
-tests/test_app.py .... PASSED
-```
-
-Testing ensures the core endpoints behave correctly before the code proceeds to the build pipeline.
-
----
-
-# Docker Containerization
-
-The application is containerized using **Docker** to ensure consistent environments across development and build stages.
-
-### Build Docker Image
-
-```
+Docker Steps
+Build Image
 docker build -t aceest-app .
-```
-
-### Run Docker Container
-
-```
+Run Container
 docker run -p 5000:5000 aceest-app
-```
+Kubernetes Deployment
 
-Access application:
+Apply configuration:
 
-```
-http://localhost:5000
-```
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
 
-Docker guarantees that the application runs the same way across all environments.
+Check resources:
 
----
+kubectl get pods
+kubectl get svc
+Deployment Strategy Used
+Rolling Update (default Kubernetes strategy)
 
-# Jenkins Build Integration
+Rollback command:
 
-Jenkins is used as a **secondary validation layer** for the CI pipeline.
+kubectl rollout undo deployment aceest-app
+Challenges Faced
+Jenkins configuration issues
+Docker dependency conflicts
+Kubernetes networking limitations
+NodePort accessibility
+Conclusion
 
-### Jenkins Workflow
+This assignment helped in understanding how a real CI/CD pipeline works beyond just testing, especially deployment using Kubernetes.
 
-1. Jenkins pulls the latest code from GitHub.
-2. Jenkins builds the project environment.
-3. Jenkins performs Docker build validation.
-
-### Jenkins Build Steps
-
-```
-git clone repository
-docker build -t aceest-app .
-```
-
-This confirms that the application successfully builds in an isolated CI environment.
-
----
-
-# GitHub Actions CI/CD Pipeline
-
-The project includes an automated CI/CD pipeline defined in:
-
-```
-.github/workflows/main.yml
-```
-
-### Pipeline Trigger
-
-The pipeline runs automatically on:
-
-* Every **push**
-* Every **pull request**
-
-### Pipeline Stages
-
-#### 1. Build & Lint
-
-The workflow installs dependencies and validates Python syntax.
-
-#### 2. Docker Image Build
-
-The pipeline builds the Docker container to verify the containerization process.
-
-#### 3. Automated Testing
-
-Pytest is executed inside the pipeline to ensure application stability.
-
-### Example Workflow
-
-```
-Build → Docker Build → Run Tests
-```
-
-If all stages pass successfully, the build is considered stable.
-
----
-
-# CI/CD Workflow Diagram
-
-```
-Developer Push Code
-        ↓
-GitHub Repository
-        ↓
-GitHub Actions Pipeline
-   (Build + Test + Docker)
-        ↓
-Jenkins Build Validation
-        ↓
-Successful CI Pipeline
-```
-
----
-
-# DevOps Best Practices Implemented
-
-* Version-controlled infrastructure
-* Automated testing
-* Containerized application environment
-* Continuous Integration
-* Build automation
-* Reproducible builds
-
----
-
-# Conclusion
-
-This project demonstrates a practical implementation of **DevOps CI/CD principles** using modern tools.
-
-By integrating **GitHub Actions, Docker, Jenkins, and automated testing**, the system ensures:
-
-* Code reliability
-* Faster development cycles
-* Consistent deployment environments
-* Automated build verification
-
-This workflow reflects real-world DevOps practices used in modern software engineering teams.
-
----
-
-# Author
-
-**Amitosh Gautam**
-M.Tech –  Introduction to DEVOPS Assignment 1
-ACEest Fitness & Gym CI/CD Implementation
+It demonstrates automation, consistency, and scalability in modern DevOps workflows.
